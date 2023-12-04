@@ -3,6 +3,8 @@
 namespace TomatoPHP\TomatoInventory;
 
 use Illuminate\Support\ServiceProvider;
+use TomatoPHP\TomatoAdmin\Facade\TomatoMenu;
+use TomatoPHP\TomatoAdmin\Services\Contracts\Menu;
 
 
 class TomatoInventoryServiceProvider extends ServiceProvider
@@ -52,6 +54,17 @@ class TomatoInventoryServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //you boot methods here
+        TomatoMenu::register([
+            Menu::make()
+                ->group(__('Inventory'))
+                ->label(__('Inventory'))
+                ->route('admin.inventories.index')
+                ->icon('bx bxs-building-house'),
+            Menu::make()
+                ->group(__('Inventory'))
+                ->label(__('Refunds'))
+                ->route('admin.refunds.index')
+                ->icon('bx bx-refresh')
+        ]);
     }
 }

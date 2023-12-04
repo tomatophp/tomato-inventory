@@ -2,6 +2,9 @@
 
 
 use Illuminate\Support\Facades\Route;
+use TomatoPHP\TomatoInventory\Http\Controllers\InventoryController;
+use TomatoPHP\TomatoInventory\Http\Controllers\RefundController;
+use TomatoPHP\TomatoInventory\Http\Controllers\InventoryLogController;
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/inventories', [InventoryController::class, 'index'])->name('inventories.index');
