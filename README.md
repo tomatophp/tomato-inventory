@@ -1,3 +1,5 @@
+![Screenshot](https://github.com/tomatophp/tomato-inventory/blob/master/art/screenshot.png)
+
 # Tomato inventory
 
 Inventory Management for any types of products with reports and barcode print
