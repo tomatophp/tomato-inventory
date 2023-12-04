@@ -1,0 +1,41 @@
+{
+    "name": "tomatophp/tomato-inventory",
+    "type": "library",
+    "description": "Inventory Management for any types of products with reports and barcode print",
+    "keywords": [
+        "php",
+        "laravel",
+        "template"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "TomatoPHP\\TomatoInventory\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TomatoPHP\\TomatoInventory\\TomatoInventoryServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Fady Mondy",
+            "email": "info@3x1.io"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2",
+        "tomatophp/tomato-crm": "^1.1",
+        "tomatophp/tomato-products": "^1.0",
+        "tomatophp/tomato-orders": "^1.0",
+        "tomatophp/console-helpers": "^1.1"
+    }
+}
