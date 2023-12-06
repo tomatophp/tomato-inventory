@@ -33,6 +33,11 @@ class RefundItem extends Model
      */
     protected $fillable = ['refund_id', 'type', 'item_type', 'item_id', 'linked_type', 'linked_id', 'item', 'description', 'note', 'qty', 'price', 'discount', 'tax', 'total', 'options', 'is_activated', 'created_at', 'updated_at'];
 
+    protected $casts = [
+        "options" => "json",
+        "is_activated" => "boolean"
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

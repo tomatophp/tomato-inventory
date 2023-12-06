@@ -6,27 +6,34 @@ use TomatoPHP\TomatoInventory\Http\Controllers\InventoryController;
 use TomatoPHP\TomatoInventory\Http\Controllers\RefundController;
 use TomatoPHP\TomatoInventory\Http\Controllers\InventoryLogController;
 
+
+Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
+    Route::get('admin/inventories/print', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'printIndex'])->name('inventories.print');
+    Route::post('admin/inventories/status', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'status'])->name('inventories.status');
+    Route::get('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodes'])->name('inventories.barcodes');
+    Route::post('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodesPrint'])->name('inventories.barcodes.print');
+    Route::get('admin/inventories/report', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'report'])->name('inventories.report');
+    Route::post('admin/inventories/report', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'reportData'])->name('inventories.report.data');
+    Route::post('admin/inventories/report/print', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'reportPrint'])->name('inventories.report.print');
+    Route::get('admin/inventories/import', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'import'])->name('inventories.import');
+    Route::post('admin/inventories/import', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'importStore'])->name('inventories.import.store');
+    Route::post('admin/inventories/{model}/approve-item', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'approveItem'])->name('inventories.approve.item');
+    Route::post('admin/inventories/{model}/approve', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'approve'])->name('inventories.approve');
+});
+
+
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/inventories', [InventoryController::class, 'index'])->name('inventories.index');
-    Route::get('admin/inventories/print', [InventoryController::class, 'printIndex'])->name('inventories.print');
-    Route::post('admin/inventories/status', [InventoryController::class, 'status'])->name('inventories.status');
-    Route::get('admin/inventories/barcodes', [InventoryController::class, 'barcodes'])->name('inventories.barcodes');
-    Route::post('admin/inventories/barcodes', [InventoryController::class, 'barcodesPrint'])->name('inventories.barcodes.print');
-    Route::get('admin/inventories/report', [InventoryController::class, 'report'])->name('inventories.report');
-    Route::post('admin/inventories/report', [InventoryController::class, 'reportData'])->name('inventories.report.data');
-    Route::post('admin/inventories/report/print', [InventoryController::class, 'reportPrint'])->name('inventories.report.print');
-    Route::get('admin/inventories/import', [InventoryController::class, 'import'])->name('inventories.import');
-    Route::post('admin/inventories/import', [InventoryController::class, 'importStore'])->name('inventories.import.store');
-    Route::post('admin/inventories/{model}/approve-item', [InventoryController::class, 'approveItem'])->name('inventories.approve.item');
     Route::get('admin/inventories/api', [InventoryController::class, 'api'])->name('inventories.api');
     Route::get('admin/inventories/create', [InventoryController::class, 'create'])->name('inventories.create');
     Route::post('admin/inventories', [InventoryController::class, 'store'])->name('inventories.store');
     Route::get('admin/inventories/{model}', [InventoryController::class, 'show'])->name('inventories.show');
     Route::get('admin/inventories/{model}/edit', [InventoryController::class, 'edit'])->name('inventories.edit');
-    Route::post('admin/inventories/{model}/approve', [InventoryController::class, 'approve'])->name('inventories.approve');
     Route::post('admin/inventories/{model}', [InventoryController::class, 'update'])->name('inventories.update');
     Route::delete('admin/inventories/{model}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
 });
+
+
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/refunds', [RefundController::class, 'index'])->name('refunds.index');

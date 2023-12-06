@@ -5,6 +5,7 @@ namespace TomatoPHP\TomatoInventory;
 use Illuminate\Support\ServiceProvider;
 use TomatoPHP\TomatoAdmin\Facade\TomatoMenu;
 use TomatoPHP\TomatoAdmin\Services\Contracts\Menu;
+use TomatoPHP\TomatoInventory\Services\Inventory;
 
 
 class TomatoInventoryServiceProvider extends ServiceProvider
@@ -66,5 +67,9 @@ class TomatoInventoryServiceProvider extends ServiceProvider
                 ->route('admin.refunds.index')
                 ->icon('bx bx-refresh')
         ]);
+
+        app()->bind('tomato-inventory', function (){
+            return new Inventory();
+        });
     }
 }

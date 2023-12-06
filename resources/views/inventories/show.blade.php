@@ -187,4 +187,15 @@
                                method="delete"  label="{{__('Delete')}}" />
         <x-tomato-admin-button secondary :href="route('admin.inventories.index')" label="{{__('Cancel')}}"/>
     </div>
+
+
+    <x-tomato-admin-relations-group :relations="['logs'=> __('Logs')]">
+        <x-tomato-admin-relations
+            :model="$model"
+            :table="\TomatoPHP\TomatoInventory\Tables\InventoryLogTable::class"
+            name="logs"
+            view="tomato-inventory::inventory-logs.index"
+
+        />
+    </x-tomato-admin-relations-group>
 </x-tomato-admin-container>

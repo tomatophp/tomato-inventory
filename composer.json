@@ -22,7 +22,10 @@
         "laravel": {
             "providers": [
                 "TomatoPHP\\TomatoInventory\\TomatoInventoryServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "TomatoInventory": "TomatoPHP\\TomatoInventory\\Facades\\TomatoInventory"
+            }
         }
     },
     "authors": [

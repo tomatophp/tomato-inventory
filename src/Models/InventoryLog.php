@@ -4,6 +4,7 @@ namespace TomatoPHP\TomatoInventory\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use Kirschbaum\PowerJoins\PowerJoins;
 
 /**
  * @property integer $id
@@ -37,6 +38,6 @@ class InventoryLog extends Model
      */
     public function user()
     {
-        return $this->belongsTo('Modules\TomatoInventory\Entities\User');
+        return $this->belongsTo(User::class);
     }
 }

@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use ProtoneMedia\Splade\Facades\Toast;
 use TomatoPHP\TomatoAdmin\Facade\Tomato;
+use TomatoPHP\TomatoInventory\Models\Inventory;
+use TomatoPHP\TomatoInventory\Models\InventoryItem;
 use TomatoPHP\TomatoInventory\Models\Refund;
 use TomatoPHP\TomatoInventory\Models\RefundItem;
+use TomatoPHP\TomatoOrders\Models\Branch;
 use TomatoPHP\TomatoOrders\Models\Order;
 use TomatoPHP\TomatoProducts\Models\Product;
 
@@ -33,7 +37,12 @@ class RefundController extends Controller
             request: $request,
             model: $this->model,
             view: 'tomato-inventory::refunds.index',
-            table: \TomatoPHP\TomatoInventory\Tables\RefundTable::class
+            table: \TomatoPHP\TomatoInventory\Tables\RefundTable::class,
+            filters: [
+                "order_id",
+                "branch_id",
+                "status"
+            ]
         );
     }
 
@@ -46,6 +55,11 @@ class RefundController extends Controller
         return Tomato::json(
             request: $request,
             model: \TomatoPHP\TomatoInventory\Models\Refund::class,
+            filters: [
+                "order_id",
+                "branch_id",
+                "status"
+            ]
         );
     }
 
@@ -68,6 +82,7 @@ class RefundController extends Controller
 
         $request->merge([
             "user_id" => auth('web')->user()->id,
+            "branch_id" => $request->get('order_id')['branch_id'],
             "order_id" => $request->get('order_id')['id'],
             "total" => collect($request->get('items'))->sum('total'),
             "vat" => collect($request->get('items'))->map(function ($item) {
@@ -81,7 +96,7 @@ class RefundController extends Controller
         $request->validate([
             'company_id' => 'nullable|exists:companies,id',
             'branch_id' => 'sometimes|exists:branches,id',
-            'order_id' => 'nullable|exists:orders,id',
+            'order_id' => 'nullable|exists:orders,id|unique:refunds,order_id',
             'status' => 'nullable|max:255|string',
             'notes' => 'nullable|max:65535',
             'items' => "required|array|min:1",
@@ -93,6 +108,26 @@ class RefundController extends Controller
             message: __('Refund updated successfully'),
             redirect: 'admin.refunds.index',
         );
+
+        if($request->get('status') === 'inventory'){
+            $exists = Inventory::where('uuid', "REFUND-".$response->record->id)->first();
+            if(!$exists){
+                $branch = Branch::find($request->get('branch_id'));
+                $inventory = new Inventory();
+                $inventory->uuid = "REFUND-".$response->record->id;
+                $inventory->company_id = $branch->company_id;
+                $inventory->branch_id = $request->get('branch_id');
+                $inventory->user_id = auth('web')->user()->id;
+                $inventory->type = 'in';
+                $inventory->status = 'pending';
+                $inventory->total = $response->record->total;
+                $inventory->vat = $response->record->vat;
+                $inventory->discount = $response->record->discount;
+                $inventory->notes = $request->get('notes');
+                $inventory->save();
+            }
+
+        }
 
         foreach ($request->get('items') as $item){
             if(is_array($item['item'])){
@@ -112,6 +147,20 @@ class RefundController extends Controller
                 $type = 'item';
             }
 
+            if($request->get('status') === 'inventory' && !$exists){
+                $inventory->inventoryItems()->create([
+                    'item_id' => $item_id??null,
+                    'item_type' => $item_type??null,
+                    'item' => $name,
+                    'qty' => $item['qty'],
+                    'price' => $item['price'],
+                    'discount' => $item['discount'],
+                    'tax' => $item['tax'],
+                    'total' => $item['total'],
+                    'options' => $item['options'] ?? [],
+                ]);
+            }
+
 
             $response->record->refundItems()->create([
                 'item' => $name,
@@ -123,7 +172,7 @@ class RefundController extends Controller
                 'type' => $type,
                 'item_id' => $item_id??null,
                 'item_type' => $item_type??null,
-                'options' => $item['options'] ?? null,
+                'options' => $item['options'] ?? [],
                 'linked_type' => Order::class,
                 'linked_id' => $request->get('order_id')
             ]);
@@ -178,6 +227,7 @@ class RefundController extends Controller
     {
         $request->merge([
             "user_id" => auth('web')->user()->id,
+            "branch_id" => $request->get('order_id')['branch_id'],
             "order_id" => $request->get('order_id')['id'],
             "total" => collect($request->get('items'))->sum('total'),
             "vat" => collect($request->get('items'))->map(function ($item) {
@@ -192,7 +242,7 @@ class RefundController extends Controller
             'items' => "required|array|min:1",
             'company_id' => 'nullable|exists:companies,id',
             'branch_id' => 'sometimes|exists:branches,id',
-            'order_id' => 'nullable|exists:orders,id',
+            'order_id' => 'nullable|exists:orders,id|unique:refunds,order_id,'.$model->id,
             'status' => 'nullable|max:255|string',
             'notes' => 'nullable|max:65535'
         ]);
@@ -203,6 +253,26 @@ class RefundController extends Controller
             message: __('Refund updated successfully'),
             redirect: 'admin.refunds.index',
         );
+
+        if($request->get('status') === 'inventory') {
+            $exists = Inventory::where('uuid', "REFUND-" . $response->record->id)->first();
+            if (!$exists) {
+                $branch = Branch::find($request->get('branch_id'));
+                $inventory = new Inventory();
+                $inventory->uuid = "REFUND-" . $response->record->id;
+                $inventory->company_id = $branch->company_id;
+                $inventory->branch_id = $response->record->branch_id;
+                $inventory->user_id = auth('web')->user()->id;
+                $inventory->type = 'in';
+                $inventory->status = 'pending';
+                $inventory->total = $response->record->total;
+                $inventory->vat = $response->record->vat;
+                $inventory->discount = $response->record->discount;
+                $inventory->notes = $response->record->notes;
+                $inventory->save();
+            }
+
+        }
 
          foreach ($request->get('items') as $item){
              if(is_array($item['item'])){
@@ -222,6 +292,20 @@ class RefundController extends Controller
                  $type = 'item';
              }
 
+             if($request->get('status') === 'inventory' && !$exists){
+                 $inventory->inventoryItems()->create([
+                     'item_id' => $item_id??null,
+                     'item_type' => $item_type??null,
+                     'item' => $name,
+                     'qty' => $item['qty'],
+                     'price' => $item['price'],
+                     'discount' => $item['discount'],
+                     'tax' => $item['tax'],
+                     'total' => $item['total'],
+                     'options' => $item['options'] ?? [],
+                 ]);
+             }
+
              if(array_key_exists('id', $item)){
                  $refundItem = RefundItem::find($item['id']);
                  $refundItem->update([
@@ -234,7 +318,7 @@ class RefundController extends Controller
                      'type' => $type,
                      'item_id' => $item_id??null,
                      'item_type' => $item_type??null,
-                     'options' => $item['options'] ?? null,
+                     'options' => $item['options'] ?? [],
                      'linked_type' => Order::class,
                      'linked_id' => $request->get('order_id')
                  ]);
@@ -250,7 +334,7 @@ class RefundController extends Controller
                      'type' => $type,
                      'item_id' => $item_id??null,
                      'item_type' => $item_type??null,
-                     'options' => $item['options'] ?? null,
+                     'options' => $item['options'] ?? [],
                      'linked_type' => Order::class,
                      'linked_id' => $request->get('order_id')
                  ]);
@@ -305,7 +389,31 @@ class RefundController extends Controller
     public function approve(Refund $model, Request $request)
     {
         $model->is_activated = true;
+        $model->status = "inventory";
         $model->save();
+
+        $exists = Inventory::where('uuid', "REFUND-" . $model->id)->first();
+        if (!$exists) {
+            $branch = Branch::find($model->branch_id);
+            $inventory = new Inventory();
+            $inventory->uuid = "REFUND-" . $model->id;
+            $inventory->company_id = $branch->company_id;
+            $inventory->branch_id = $model->branch_id;
+            $inventory->user_id =auth('web')->user()->id;
+            $inventory->type = 'in';
+            $inventory->status = 'pending';
+            $inventory->total = $model->total;
+            $inventory->vat = $model->vat;
+            $inventory->discount = $model->discount;
+            $inventory->notes = $model->notes;
+            $inventory->save();
+        }
+
+        if(!$exists){
+            foreach ($model->refundItems as $item){
+                $inventory->inventoryItems()->create($item->toArray());
+            }
+        }
 
         Toast::success(__('Refund Movement Has been updated! with status:') . " " . $model->status)->autoDismiss(2);
         return back();
@@ -316,11 +424,40 @@ class RefundController extends Controller
             'status' => 'required|string|max:255'
         ]);
 
+
         $model->status = $request->get('status');
         $model->save();
+
+        if($request->get('status') === 'inventory') {
+            $exists = Inventory::where('uuid', "LIKE", "%REFUND-" . $model->id)->first();
+            if (!$exists) {
+                $branch = Branch::find($model->branch_id);
+                $inventory = new Inventory();
+                $inventory->uuid = "REFUND-" . $model->id;
+                $inventory->company_id = $branch->company_id;
+                $inventory->branch_id = $model->branch_id;
+                $inventory->user_id =auth('web')->user()->id;
+                $inventory->type = 'in';
+                $inventory->status = 'pending';
+                $inventory->total = $model->total;
+                $inventory->vat = $model->vat;
+                $inventory->discount = $model->discount;
+                $inventory->notes = $model->notes;
+                $inventory->save();
+            }
+
+        }
+
+        if($request->get('status') === 'inventory' && !$exists){
+            foreach ($model->refundItems as $item){
+                $inventory->inventoryItems()->create($item->toArray());
+            }
+        }
 
         Toast::success(__('Refund Movement Has been updated! with status:') . " " . $model->status)->autoDismiss(2);
         return back();
     }
 
+
 }
+

@@ -25,7 +25,6 @@
                 <option value="in">{{__('In')}}</option>
                 <option value="out">{{__('Out')}}</option>
           </x-splade-select>
-
         <div>
             <x-tomato-items :options="['item'=>'', 'price'=>0, 'discount'=>0, 'tax'=>0, 'qty'=>1,'total'=>0, 'options' =>(object)[]]" name="items">
                 <div class="grid grid-cols-12 gap-4 border-b py-4 my-4">
@@ -80,6 +79,10 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div v-if="form.errors.items"
+                     class="text-danger-500 mt-2 text-xs font-chakra flex gap-2 mb-[6px]">
+                    <p v-text="form.errors.items"> </p>
                 </div>
                 <div class="flex flex-col gap-4 mt-4">
                     <div class="flex justify-between gap-4 py-4 border-b">

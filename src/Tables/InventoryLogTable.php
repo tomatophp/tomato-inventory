@@ -64,17 +64,13 @@ class InventoryLogTable extends AbstractTable
             ->column(
                 key: 'id',
                 label: __('Id'),
+                hidden: true,
                 sortable: true
             )
             ->column(
-                key: 'user_id',
-                label: __('User id'),
-                sortable: true
-            )
-            ->column(
-                key: 'inventory_id',
-                label: __('Inventory id'),
-                sortable: true
+                key: 'user.name',
+                label: __('Employee'),
+                sortable: false
             )
             ->column(
                 key: 'status',
@@ -87,11 +83,10 @@ class InventoryLogTable extends AbstractTable
                 sortable: true
             )
             ->column(
-                key: 'is_closed',
-                label: __('Is closed'),
+                key: 'created_at',
+                label: __('Date'),
                 sortable: true
             )
-            ->column(key: 'actions',label: trans('tomato-admin::global.crud.actions'))
             ->export()
             ->paginate(10);
     }

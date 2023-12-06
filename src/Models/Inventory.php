@@ -96,6 +96,7 @@ class Inventory extends Model
         return $this->hasMany('TomatoPHP\TomatoInventory\Models\InventoryItem');
     }
 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -118,5 +119,9 @@ class Inventory extends Model
         else {
             return $this->inventoryMetas()->where('key', $key)->first()?->value ?? null;
         }
+    }
+
+    public function logs(){
+        return $this->hasMany(InventoryLog::class);
     }
 }

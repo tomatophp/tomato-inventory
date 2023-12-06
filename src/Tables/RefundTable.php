@@ -54,6 +54,33 @@ class RefundTable extends AbstractTable
                 label: trans('tomato-admin::global.search'),
                 columns: ['id',]
             )
+            ->selectFilter(
+                key:'order_id',
+                option_label: "uuid",
+                option_value: "id",
+                remote_root: "data",
+                remote_url: route('admin.orders.api'),
+                queryBy: 'uuid'
+            )
+            ->selectFilter(
+                key:'branch_id',
+                option_label: "name",
+                option_value: "id",
+                remote_root: "data",
+                remote_url: route('admin.branches.api')
+            )
+            ->selectFilter(
+                key:'status',
+                options: [
+                    "pending" => __("Pending"),
+                    "factory" => __("Factory"),
+                    "bad" => __("Bad"),
+                    "inventory" => __("Inventory"),
+                ]
+            )
+            ->boolFilter(
+                key:'is_activated'
+            )
             ->bulkAction(
                 label: trans('tomato-admin::global.crud.delete'),
                 each: fn (\TomatoPHP\TomatoInventory\Models\Refund $model) => $model->delete(),

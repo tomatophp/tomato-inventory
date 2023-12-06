@@ -30,12 +30,6 @@
                     <x-tomato-admin-table-action modal :href="route('admin.inventories.barcodes')" secondary icon="bx bx-barcode">
                         {{__('Print Product Barcodes')}}
                     </x-tomato-admin-table-action>
-                    <x-tomato-admin-table-action modal :href="route('admin.inventories.import')" secondary icon="bx bx-import">
-                        {{__('Import Inventory')}}
-                    </x-tomato-admin-table-action>
-                    <x-tomato-admin-table-action modal :href="route('admin.inventories.import')" secondary icon="bx bxs-file-pdf">
-                        {{__('Export PDF')}}
-                    </x-tomato-admin-table-action>
                 </x-slot:actions>
                 <x-splade-cell items>
                     <table class="border min-w-full divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
@@ -80,7 +74,6 @@
                             <option value="not-available">{{__('Not Available')}}</option>
                             <option value="part-available">{{__('Part Available')}}</option>
                             <option value="canceled">{{__('Canceled')}}</option>
-                            <option value="done">{{__('Done')}}</option>
                         </x-splade-select>
                     </x-splade-form>
                 </x-splade-cell>

@@ -17,6 +17,10 @@
                 form.items = form.order_id.items
             "
         />
+        <div v-if="form.errors.order_id"
+             class="text-danger-500 mt-2 text-xs font-chakra flex gap-2 mb-[6px]">
+            <p v-text="form.errors.order_id"> </p>
+        </div>
 
 
         <div v-if="form.items.length">
@@ -108,7 +112,7 @@
             </x-tomato-items>
         </div>
 
-        <x-splade-select choices :label="__('Status')" name="status"  :placeholder="__('Status')">
+        <x-splade-select v-if="form.status !== 'inventory'" choices :label="__('Status')" name="status"  :placeholder="__('Status')">
             <option value="pending">{{__('Pending')}}</option>
             <option value="factory">{{__('Factory')}}</option>
             <option value="bad">{{__('Bad')}}</option>

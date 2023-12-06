@@ -54,6 +54,38 @@ class InventoryTable extends AbstractTable
                 label: trans('tomato-admin::global.search'),
                 columns: ['id',]
             )
+            ->selectFilter(
+                key:'order_id',
+                option_label: "uuid",
+                option_value: "id",
+                remote_root: "data",
+                remote_url: route('admin.orders.api'),
+                queryBy: 'uuid'
+            )
+            ->selectFilter(
+                key:'branch_id',
+                option_label: "name",
+                option_value: "id",
+                remote_root: "data",
+                remote_url: route('admin.branches.api')
+            )
+            ->selectFilter(
+                key:'status',
+                options: [
+                    "pending" => __("Pending"),
+                    "not-available" => __("Not Available"),
+                    "part-available" => __("Part Available"),
+                    "canceled" => __("Canceled"),
+                    "done" => __("Done"),
+                ]
+            )
+            ->selectFilter(
+                key:'type',
+                options: [
+                    "in" => __("In"),
+                    "out" => __("Out")
+                ]
+            )
             ->bulkAction(
                 label: trans('tomato-admin::global.crud.delete'),
                 each: fn (\TomatoPHP\TomatoInventory\Models\Inventory $model) => $model->delete(),

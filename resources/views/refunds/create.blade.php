@@ -17,6 +17,10 @@
                 form.items = form.order_id.items
             "
         />
+        <div v-if="form.errors.order_id"
+             class="text-danger-500 mt-2 text-xs font-chakra flex gap-2 mb-[6px]">
+            <p v-text="form.errors.order_id"> </p>
+        </div>
 
 
         <div v-if="form.items.length">
