@@ -37,9 +37,6 @@ Route::middleware(['web','auth', 'verified'])->name('admin.')->group(function ()
     Route::get('admin/inventories/{model}/print', [InventoryController::class, 'print'])->name('inventories.print.show');
 });
 
-
-
-
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/refunds', [RefundController::class, 'index'])->name('refunds.index');
     Route::get('admin/refunds/api', [RefundController::class, 'api'])->name('refunds.api');
@@ -52,16 +49,4 @@ Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(f
     Route::post('admin/refunds/{model}/approve', [RefundController::class, 'approve'])->name('refunds.approve');
     Route::post('admin/refunds/{model}', [RefundController::class, 'update'])->name('refunds.update');
     Route::delete('admin/refunds/{model}', [RefundController::class, 'destroy'])->name('refunds.destroy');
-});
-
-
-Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
-    Route::get('admin/inventory-logs', [InventoryLogController::class, 'index'])->name('inventory-logs.index');
-    Route::get('admin/inventory-logs/api', [InventoryLogController::class, 'api'])->name('inventory-logs.api');
-    Route::get('admin/inventory-logs/create', [InventoryLogController::class, 'create'])->name('inventory-logs.create');
-    Route::post('admin/inventory-logs', [InventoryLogController::class, 'store'])->name('inventory-logs.store');
-    Route::get('admin/inventory-logs/{model}', [InventoryLogController::class, 'show'])->name('inventory-logs.show');
-    Route::get('admin/inventory-logs/{model}/edit', [InventoryLogController::class, 'edit'])->name('inventory-logs.edit');
-    Route::post('admin/inventory-logs/{model}', [InventoryLogController::class, 'update'])->name('inventory-logs.update');
-    Route::delete('admin/inventory-logs/{model}', [InventoryLogController::class, 'destroy'])->name('inventory-logs.destroy');
 });
