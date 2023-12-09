@@ -21,9 +21,14 @@
                             {{__('Inventory History')}}
                         </x-tomato-admin-table-action>
                     @endif
-                    <x-tomato-admin-table-action :href="route('admin.inventories.print')" secondary icon="bx bx-printer">
-                        {{__('Print Inventory Report')}}
-                    </x-tomato-admin-table-action>
+                    <a href="https://tomato-p.test/admin/inventories/print" target="_blank" class="text-left w-full px-4 py-2 text-sm font-normal text-gray-700 dark:text-white dark:hover:bg-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <div class="flex justify-start gap-2">
+                            <div class="flex flex-col justify-center items-center">
+                                <i class="bx bx-printer"></i>
+                            </div>
+                            <div>  {{__('Print Inventory Report')}} </div>
+                        </div>
+                    </a>
                     <x-tomato-admin-table-action modal :href="route('admin.inventories.report')" secondary icon="bx bx-chart">
                         {{__('Product Inventory Report')}}
                     </x-tomato-admin-table-action>
@@ -81,7 +86,20 @@
                     <x-tomato-admin-row table type="bool" :value="$item->is_activated" />
                 </x-splade-cell>
                 <x-splade-cell order.uuid>
-                    <x-tomato-admin-row table  :value="$item->order?->uuid" />
+                    <div class="grid gap-y-2">
+                        <a href="{{route('admin.orders.print', $item->order?->id)}}" target="_blank" class="flex fi-in-text">
+                            <div class="min-w-0 flex-1">
+                                <div class="inline-flex items-center gap-2 justify-center ml-auto rtl:ml-0 rtl:mr-auto min-h-4 px-2 py-0.5 text-xs font-medium tracking-tight rounded-xl whitespace-normal text-primary-700 bg-primary-500/10 dark:text-primary-500">
+                                    <div class="flex justify-center gap-2">
+                                        <x-heroicon-s-printer class="h-4 w-4"/>
+                                        <div>
+                                            {{$item->order?->uuid}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </x-splade-cell>
                 <x-splade-cell total>
                     <x-tomato-admin-row table  :value="dollar($item->total)" />
@@ -95,6 +113,9 @@
                             <x-heroicon-s-check-circle class="h-6 w-6"/>
                         </x-tomato-admin-button>
                         @endif
+                        <a href="{{route('admin.inventories.print.show', $item->id)}}" target="_blank" title="{{__('Print')}}" class="px-2 text-success-500">
+                            <x-heroicon-s-printer class="h-6 w-6"/>
+                        </a>
                         <x-tomato-admin-button success type="icon" title="{{trans('tomato-admin::global.crud.view')}}" :href="route('admin.inventories.show', $item->id)">
                             <x-heroicon-s-eye class="h-6 w-6"/>
                         </x-tomato-admin-button>

@@ -33,6 +33,11 @@ Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(f
     Route::delete('admin/inventories/{model}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
 });
 
+Route::middleware(['web','auth', 'verified'])->name('admin.')->group(function () {
+    Route::get('admin/inventories/{model}/print', [InventoryController::class, 'print'])->name('inventories.print.show');
+});
+
+
 
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {

@@ -163,7 +163,7 @@ class Inventory
         }
     }
 
-    public function orderToInventory(Order $order): void
+    public function orderToInventory(Order $order, bool $paid=false): void
     {
         $exists = \TomatoPHP\TomatoInventory\Models\Inventory::where('uuid', "ORDER-".$order->uuid)->first();
         if(!$exists){
@@ -180,15 +180,34 @@ class Inventory
             $inventory->user_id = auth('web')->user()->id;
             $inventory->type = 'out';
             $inventory->order_id = $order->id;
-            $inventory->status = 'pending';
+            if($paid){
+                $inventory->status = 'done';
+            }
+            else {
+                $inventory->status = 'pending';
+            }
+
             $inventory->total = $order->total;
             $inventory->vat = $order->vat;
             $inventory->discount = $order->discount;
             $inventory->notes = $order->notes;
-            $inventory->is_activated = false;
+            if($paid){
+                $inventory->is_activated = true;
+            }
+            else {
+                $inventory->is_activated = false;
+            }
+
             $inventory->save();
 
             foreach ($order->ordersItems as $item){
+                if($paid){
+                    $is_activated = true;
+                }
+                else {
+                    $is_activated = false;
+                }
+
                 $inventory->inventoryItems()->create([
                     'item_id' => $item->product_id,
                     'item_type' => Product::class,
@@ -199,8 +218,24 @@ class Inventory
                     'tax' => $item->tax,
                     'total' => $item->total,
                     'options' => $item->options ?? [],
+                    "is_activated" => $is_activated
                 ]);
+
+
+                if($paid){
+                    $this->updateQty(
+                        $item->product_id,
+                        $branch->id,
+                        'out',
+                        $item->qty,
+                            $item->options ?? []
+                    );
+
+                    $this->log($inventory->id, "Order #".$order->uuid." has been paid so it's done now");
+                }
             };
         }
+
+
     }
 }

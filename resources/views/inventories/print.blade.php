@@ -1,7 +1,7 @@
 <body onload="window.print()">
 
 
-<table class="border min-w-full divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
+<table class="border min-w-full divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700 text-center">
     <thead class="border min-w-full divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-700">
     <tr class="hover:bg-gray-100 dark:hover:bg-gray-600">
         <th class="border p-2 font-bold">{{ __('ID') }}</th>
@@ -47,11 +47,11 @@
                                 {{ $value->item }}
                             @endif
                             <td>
-{{--                            @if($value->productMetas[0])--}}
-{{--                                @foreach($value->productMetas[0]->values as $op)--}}
-{{--                                    <span class="badge badge-success m-1 p-2">{{ $op }}</span>--}}
-{{--                                @endforeach--}}
-{{--                            @endif--}}
+                            @if($value->options)
+                                @foreach($value->options as $op)
+                                    <span class="badge badge-success m-1 p-2">{{ $op }}</span>
+                                @endforeach
+                            @endif
                             </td>
                             <td>{{ $value->qty }}</td>
                         </tr>

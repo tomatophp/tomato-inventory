@@ -347,4 +347,10 @@ class InventoryController extends Controller
 
         return $response->redirect;
     }
+
+
+    public function print(\TomatoPHP\TomatoInventory\Models\Inventory $model)
+    {
+        return view('tomato-inventory::inventories.show-print', compact('model'));
+    }
 }

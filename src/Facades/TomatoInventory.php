@@ -12,7 +12,7 @@ use TomatoPHP\TomatoOrders\Models\Order;
  * @method static bool checkInventoryItemQty(int $productID,int $branchID, float $qty,array $options=[], int $ignore=null)
  * @method static void log(int $inventroyID, string $log,string $status='pending')
  * @method static void updateQty(int $productID,int $branchID,string $type, float $qty,array $options=[])
- * @method static void orderToInventory(Order $order)
+ * @method static void orderToInventory(Order $order, bool $paid=false)
  */
 class TomatoInventory extends Facade
 {

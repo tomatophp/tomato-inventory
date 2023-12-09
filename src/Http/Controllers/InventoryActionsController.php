@@ -61,13 +61,34 @@ class InventoryActionsController extends Controller
                 $item->is_activated = true;
                 $item->save();
 
-               TomatoInventory::updateQty(
-                   productID: $item->item_id,
-                   branchID: $model->branch_id,
-                   type: $model->type,
-                   qty: $item->qty,
-                   options: $item->options
-               );
+                if($model->is_transaction){
+                    TomatoInventory::updateQty(
+                        productID: $item->item_id,
+                        branchID: $model->branch_id,
+                        type: 'out',
+                        qty: $item->qty,
+                        options: $item->options
+                    );
+
+                    TomatoInventory::updateQty(
+                        productID: $item->item_id,
+                        branchID: $model->to_branch_id,
+                        type: 'in',
+                        qty: $item->qty,
+                        options: $item->options
+                    );
+                }
+                else {
+                    TomatoInventory::updateQty(
+                        productID: $item->item_id,
+                        branchID: $model->branch_id,
+                        type: $model->type,
+                        qty: $item->qty,
+                        options: $item->options
+                    );
+                }
+
+
 
                 TomatoInventory::log(
                     inventroyID: $model->id,
@@ -106,13 +127,34 @@ class InventoryActionsController extends Controller
         $model->is_activated = true;
         $model->save();
 
-        TomatoInventory::updateQty(
-            productID: $model->item_id,
-            branchID: $model->inventory?->branch_id,
-            type: $model->inventory?->type,
-            qty: $model->qty,
-            options: $model->options
-        );
+        if($model->is_transaction){
+            TomatoInventory::updateQty(
+                productID: $model->item_id,
+                branchID: $model->inventory?->branch_id,
+                type: 'out',
+                qty: $model->qty,
+                options: $model->options
+            );
+
+            TomatoInventory::updateQty(
+                productID: $model->item_id,
+                branchID: $model->inventory?->branch_id,
+                type: 'in',
+                qty: $model->qty,
+                options: $model->options
+            );
+        }
+        else {
+            TomatoInventory::updateQty(
+                productID: $model->item_id,
+                branchID: $model->inventory?->branch_id,
+                type: $model->inventory?->type,
+                qty: $model->qty,
+                options: $model->options
+            );
+        }
+
+
 
         TomatoInventory::log(
             inventroyID: $model->inventory?->id,
