@@ -9,7 +9,7 @@ use TomatoPHP\TomatoInventory\Http\Controllers\InventoryLogController;
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/inventories/print', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'printIndex'])->name('inventories.print');
-    Route::post('admin/inventories/status', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'status'])->name('inventories.status');
+    Route::post('admin/inventories/{model}/status', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'status'])->name('inventories.status');
     Route::get('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodes'])->name('inventories.barcodes');
     Route::post('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodesPrint'])->name('inventories.barcodes.print');
     Route::get('admin/inventories/report', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'report'])->name('inventories.report');

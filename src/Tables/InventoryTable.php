@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProtoneMedia\Splade\AbstractTable;
 use ProtoneMedia\Splade\Facades\Toast;
 use ProtoneMedia\Splade\SpladeTable;
+use TomatoPHP\TomatoRoles\Services\TomatoRoles;
 
 class InventoryTable extends AbstractTable
 {
@@ -28,7 +29,12 @@ class InventoryTable extends AbstractTable
      */
     public function authorize(Request $request)
     {
-        return true;
+        if(auth('web')->user() && class_exists(TomatoRoles::class)){
+            return auth('web')->user()->can('admin.inventories.index');
+        }
+        else {
+            return true;
+        }
     }
 
     /**
@@ -86,12 +92,6 @@ class InventoryTable extends AbstractTable
                     "out" => __("Out")
                 ]
             )
-            ->bulkAction(
-                label: trans('tomato-admin::global.crud.delete'),
-                each: fn (\TomatoPHP\TomatoInventory\Models\Inventory $model) => $model->delete(),
-                after: fn () => Toast::danger(__('Inventory Has Been Deleted'))->autoDismiss(2),
-                confirm: true
-            )
             ->defaultSort('id', 'desc')
             ->column(
                 key: 'id',
@@ -142,7 +142,30 @@ class InventoryTable extends AbstractTable
                 sortable: true
             )
 
-            ->export()
             ->paginate(10);
+
+
+        if(auth('web')->user() && class_exists(TomatoRoles::class)){
+            if(auth('web')->user()->can('admin.inventories.export')){
+                $table->export();
+            }
+            if(auth('web')->user()->can('admin.inventories.destroy')){
+                $table->bulkAction(
+                    label: trans('tomato-admin::global.crud.delete'),
+                    each: fn (\TomatoPHP\TomatoInventory\Models\Inventory $model) => $model->delete(),
+                    after: fn () => Toast::danger(__('Inventory Has Been Deleted'))->autoDismiss(2),
+                    confirm: true
+                );
+            }
+        }
+        else {
+            $table->bulkAction(
+                label: trans('tomato-admin::global.crud.delete'),
+                each: fn (\TomatoPHP\TomatoInventory\Models\Inventory $model) => $model->delete(),
+                after: fn () => Toast::danger(__('Inventory Has Been Deleted'))->autoDismiss(2),
+                confirm: true
+            );
+            $table->export();
+        }
     }
 }

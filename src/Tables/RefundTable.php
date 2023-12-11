@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProtoneMedia\Splade\AbstractTable;
 use ProtoneMedia\Splade\Facades\Toast;
 use ProtoneMedia\Splade\SpladeTable;
+use TomatoPHP\TomatoRoles\Services\TomatoRoles;
 
 class RefundTable extends AbstractTable
 {
@@ -81,12 +82,6 @@ class RefundTable extends AbstractTable
             ->boolFilter(
                 key:'is_activated'
             )
-            ->bulkAction(
-                label: trans('tomato-admin::global.crud.delete'),
-                each: fn (\TomatoPHP\TomatoInventory\Models\Refund $model) => $model->delete(),
-                after: fn () => Toast::danger(__('Refund Has Been Deleted'))->autoDismiss(2),
-                confirm: true
-            )
             ->defaultSort('id', 'desc')
             ->column(key: 'actions',label: trans('tomato-admin::global.crud.actions'))
             ->column(
@@ -125,7 +120,31 @@ class RefundTable extends AbstractTable
                 label: __('Total'),
                 sortable: true
             )
-            ->export()
             ->paginate(10);
+
+
+
+        if(auth('web')->user() && class_exists(TomatoRoles::class)){
+            if(auth('web')->user()->can('admin.refunds.export')){
+                $table->export();
+            }
+            if(auth('web')->user()->can('admin.refunds.destroy')){
+                $table->bulkAction(
+                    label: trans('tomato-admin::global.crud.delete'),
+                    each: fn (\TomatoPHP\TomatoInventory\Models\Refund $model) => $model->delete(),
+                    after: fn () => Toast::danger(__('Refund Has Been Deleted'))->autoDismiss(2),
+                    confirm: true
+                );
+            }
+        }
+        else {
+            $table->bulkAction(
+                label: trans('tomato-admin::global.crud.delete'),
+                each: fn (\TomatoPHP\TomatoInventory\Models\Refund $model) => $model->delete(),
+                after: fn () => Toast::danger(__('Refund Has Been Deleted'))->autoDismiss(2),
+                confirm: true
+            );
+            $table->export();
+        }
     }
 }

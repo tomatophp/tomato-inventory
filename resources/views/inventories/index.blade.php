@@ -24,7 +24,8 @@
                             {{__('Inventory History')}}
                         </x-tomato-admin-table-action>
                     @endif
-                    <a href="https://tomato-p.test/admin/inventories/print" target="_blank" class="text-left w-full px-4 py-2 text-sm font-normal text-gray-700 dark:text-white dark:hover:bg-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                    @can('admin.inventories.print')
+                    <a href="{{route('admin.inventories.print')}}" target="_blank" class="text-left w-full px-4 py-2 text-sm font-normal text-gray-700 dark:text-white dark:hover:bg-gray-600 hover:bg-gray-50 hover:text-gray-900">
                         <div class="flex justify-start gap-2">
                             <div class="flex flex-col justify-center items-center">
                                 <i class="bx bx-printer"></i>
@@ -32,6 +33,7 @@
                             <div>  {{__('Print Inventory Report')}} </div>
                         </div>
                     </a>
+                    @endcan
                     <x-tomato-admin-table-action modal :href="route('admin.inventories.report')" secondary icon="bx bx-chart">
                         {{__('Product Inventory Report')}}
                     </x-tomato-admin-table-action>
@@ -58,11 +60,17 @@
                                         @if($item->status !== 'canceled')
                                         <td class="border p-2">
                                             @if(!$invItem->is_activated)
-                                            <x-tomato-admin-tooltip text="{{__('Approve Item')}}">
-                                                <x-splade-link confirm href="{{route('admin.inventories.approve.item', $invItem->id)}}" method="POST">
-                                                    <i class="bx bx-check-circle text-primary-500"></i>
-                                                </x-splade-link>
-                                            </x-tomato-admin-tooltip>
+                                            @can('admin.inventories.approve.item')
+                                                <x-tomato-admin-tooltip text="{{__('Approve Item')}}">
+                                                    <x-splade-link confirm href="{{route('admin.inventories.approve.item', $invItem->id)}}" method="POST">
+                                                        <i class="bx bx-check-circle text-primary-500"></i>
+                                                    </x-splade-link>
+                                                </x-tomato-admin-tooltip>
+                                                @else
+                                                <x-tomato-admin-tooltip text="{{__('Item Approved')}}">
+                                                    <i class="bx bx-x text-danger-500"></i>
+                                                </x-tomato-admin-tooltip>
+                                            @endcan
                                             @else
                                                 <x-tomato-admin-tooltip text="{{__('Item Approved')}}">
                                                     <i class="bx bx-check text-success-500"></i>
@@ -76,8 +84,8 @@
                         </table>
                 </x-splade-cell>
                 <x-splade-cell status>
-                    <x-splade-form confirm method="POST" class="w-full" action="{{route('admin.orders.status', $item->id)}}" :default="$item" submit-on-change>
-                        <x-splade-select class="w-32" :disabled="$item->status === 'canceled' || $item->status === 'done'" name="status" placeholder="{{__('Status')}}" >
+                    <x-splade-form confirm method="POST" class="w-full" action="{{route('admin.inventories.status', $item->id)}}" :default="$item" submit-on-change>
+                        <x-splade-select class="w-64" :disabled="$item->status === 'canceled' || $item->status === 'done'" name="status" placeholder="{{__('Status')}}" >
                             <option value="pending">{{__('Pending')}}</option>
                             <option value="not-available">{{__('Not Available')}}</option>
                             <option value="part-available">{{__('Part Available')}}</option>
@@ -116,13 +124,17 @@
                 <x-splade-cell actions>
                     <div class="flex justify-start">
                         @if(!$item->is_activated)
-                        <x-tomato-admin-button confirm method="POST" type="icon" title="{{__('Approve All')}}" :href="route('admin.inventories.approve', $item->id)">
-                            <x-heroicon-s-check-circle class="h-6 w-6"/>
-                        </x-tomato-admin-button>
+                            @can('admin.inventories.approve')
+                                <x-tomato-admin-button confirm method="POST" type="icon" title="{{__('Approve All')}}" :href="route('admin.inventories.approve', $item->id)">
+                                    <x-heroicon-s-check-circle class="h-6 w-6"/>
+                                </x-tomato-admin-button>
+                            @endcan
                         @endif
-                        <a href="{{route('admin.inventories.print.show', $item->id)}}" target="_blank" title="{{__('Print')}}" class="px-2 text-success-500">
-                            <x-heroicon-s-printer class="h-6 w-6"/>
-                        </a>
+                        @can('admin.inventories.print.show')
+                            <a href="{{route('admin.inventories.print.show', $item->id)}}" target="_blank" title="{{__('Print')}}" class="px-2 text-success-500">
+                                <x-heroicon-s-printer class="h-6 w-6"/>
+                            </a>
+                        @endcan
                         <x-tomato-admin-button success type="icon" title="{{trans('tomato-admin::global.crud.view')}}" :href="route('admin.inventories.show', $item->id)">
                             <x-heroicon-s-eye class="h-6 w-6"/>
                         </x-tomato-admin-button>
