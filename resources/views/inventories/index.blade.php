@@ -12,6 +12,9 @@
         <div class="mx-auto">
             <x-splade-table :for="$table" striped>
                 <x-slot:actions>
+                    <x-tomato-admin-table-action modal :href="route('admin.inventories.import')" secondary icon="bx bx-import">
+                        {{__('Import Product Inventory')}}
+                    </x-tomato-admin-table-action>
                     @if(request()->is_activated === 'true')
                         <x-tomato-admin-table-action href="{{route('admin.inventories.index')}}" secondary icon="bx bx-home">
                             {{__('Inventory Home')}}
@@ -86,8 +89,9 @@
                     <x-tomato-admin-row table type="bool" :value="$item->is_activated" />
                 </x-splade-cell>
                 <x-splade-cell order.uuid>
+                    @if($item->order_id)
                     <div class="grid gap-y-2">
-                        <a href="{{route('admin.orders.print', $item->order?->id)}}" target="_blank" class="flex fi-in-text">
+                        <a href="{{ route('admin.orders.print', $item->order?->id) }}" target="_blank" class="flex fi-in-text">
                             <div class="min-w-0 flex-1">
                                 <div class="inline-flex items-center gap-2 justify-center ml-auto rtl:ml-0 rtl:mr-auto min-h-4 px-2 py-0.5 text-xs font-medium tracking-tight rounded-xl whitespace-normal text-primary-700 bg-primary-500/10 dark:text-primary-500">
                                     <div class="flex justify-center gap-2">
@@ -100,6 +104,9 @@
                             </div>
                         </a>
                     </div>
+                    @else
+                        -
+                    @endif
                 </x-splade-cell>
                 <x-splade-cell total>
                     <x-tomato-admin-row table  :value="dollar($item->total)" />

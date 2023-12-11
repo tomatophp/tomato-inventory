@@ -6,16 +6,20 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 use ProtoneMedia\Splade\Facades\Toast;
 use TomatoPHP\TomatoAdmin\Facade\Tomato;
 use TomatoPHP\TomatoEcommerce\Services\Cart\ProductsServices;
 use TomatoPHP\TomatoInventory\Facades\TomatoInventory;
+use TomatoPHP\TomatoInventory\Import\ImportInventory;
 use TomatoPHP\TomatoInventory\Models\Inventory;
 use TomatoPHP\TomatoInventory\Models\InventoryItem;
 use TomatoPHP\TomatoInventory\Models\InventoryLog;
 use TomatoPHP\TomatoInventory\Models\InventoryReport;
 use TomatoPHP\TomatoOrders\Facades\TomatoOrdering;
+use TomatoPHP\TomatoOrders\Models\Branch;
 use TomatoPHP\TomatoOrders\Models\Order;
 use TomatoPHP\TomatoProducts\Models\Product;
 
@@ -233,6 +237,89 @@ class InventoryActionsController extends Controller
 
     public function import(){
         return view('tomato-inventory::inventories.import');
+    }
+
+
+    public function importStore(Request $request)
+    {
+        $request->validate([
+            "file" => "required|file|mimes:xlsx,doc,docx,ppt,pptx,ods,odt,odp",
+            'uuid' => 'required|unique:inventories,uuid',
+            'branch_id' => 'required|exists:branches,id',
+            'type' => 'required|max:255|string'
+        ]);
+
+        $collection = Excel::toArray(new ImportInventory(), $request->file('file'));
+        unset($collection[0][0]);
+        $branch = Branch::find($request->get('branch_id'));
+        if($branch){
+            DB::beginTransaction();
+            $inventory = Inventory::create([
+                "branch_id" => $branch->id,
+                "company_id" => $branch->company_id,
+                "user_id" => auth('web')->user()->id,
+                "uuid" => $request->get('uuid'),
+                "type" => $request->get('type'),
+                "status" => "pending",
+                "is_activated" => false
+            ]);
+
+            if($inventory){
+                $total = 0;
+                $discount = 0;
+                $vat = 0;
+                foreach ($collection[0] as $item){
+                    $product = Product::where('sku', $item[0])->first();
+                    $options = [];
+                    if($product){
+                        if($product->has_options){
+                            $productOptions = $product->productMetas()->where('key', 'options')->first()?->value;
+                            $inventoryOptions = explode(',', $item[2]);
+                            foreach ($productOptions as $key=>$option){
+                                $checkItem = array_intersect($option, $inventoryOptions);
+                                if(count($checkItem) >= 1){
+                                    $moveToCollection = collect($checkItem);
+                                    $options[$key] = $moveToCollection->first();
+                                }
+                                else {
+                                    DB::rollBack();
+
+                                    Toast::danger(__('Some Options on the file not correct please try again'))->autoDismiss(2);
+                                    return back();
+                                }
+                            }
+                        }
+
+                        $inventory->inventoryItems()->create([
+                            'item_id' => $product->id??null,
+                            'item_type' => Product::class??null,
+                            'item' => $product->name,
+                            'qty' => $item[1],
+                            'price' => $product->price,
+                            'discount' => $product->discount,
+                            'tax' => $product->vat,
+                            'total' => (($product->price+$product->vat)-$product->discount)* $item[1],
+                            'options' => $options,
+                        ]);
+
+                        $total+= (($product->price+$product->vat)-$product->discount)* $item[1];
+                        $discount+= $product->discount;
+                        $vat+= $product->vat;
+                    }
+                }
+
+                $inventory->total = $total;
+                $inventory->discount = $discount;
+                $inventory->vat =$vat;
+                $inventory->save();
+            }
+            DB::commit();
+        }
+
+
+
+        Toast::success(__('Your File Has Been Imported Successfully'))->autoDismiss(2);
+        return back();
     }
 
     public function printIndex(Request $request){
