@@ -3,7 +3,7 @@
 namespace TomatoPHP\TomatoInventory\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use TomatoPHP\TomatoOrders\Models\Branch;
+use TomatoPHP\TomatoBranches\Models\Branch;
 
 /**
  * @property integer $id
@@ -33,6 +33,6 @@ class InventoryReport extends Model
      */
     public function branch()
     {
-        return $this->belongsTo('Modules\TomatoInventory\Entities\Branch');
+        return $this->belongsTo(Branch::class);
     }
 }

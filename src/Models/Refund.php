@@ -4,8 +4,8 @@ namespace TomatoPHP\TomatoInventory\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use TomatoPHP\TomatoOrders\Models\Branch;
-use TomatoPHP\TomatoOrders\Models\Company;
+use TomatoPHP\TomatoBranches\Models\Branch;
+use TomatoPHP\TomatoBranches\Models\Company;
 use TomatoPHP\TomatoOrders\Models\Order;
 
 /**

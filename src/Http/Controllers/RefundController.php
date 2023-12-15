@@ -14,7 +14,7 @@ use TomatoPHP\TomatoInventory\Models\Inventory;
 use TomatoPHP\TomatoInventory\Models\InventoryItem;
 use TomatoPHP\TomatoInventory\Models\Refund;
 use TomatoPHP\TomatoInventory\Models\RefundItem;
-use TomatoPHP\TomatoOrders\Models\Branch;
+use TomatoPHP\TomatoBranches\Models\Branch;
 use TomatoPHP\TomatoOrders\Models\Order;
 use TomatoPHP\TomatoProducts\Models\Product;
 

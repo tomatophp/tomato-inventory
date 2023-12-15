@@ -7,7 +7,7 @@ use TomatoPHP\TomatoInventory\Facades\TomatoInventory;
 use TomatoPHP\TomatoInventory\Models\InventoryItem;
 use TomatoPHP\TomatoInventory\Models\InventoryLog;
 use TomatoPHP\TomatoInventory\Models\InventoryReport;
-use TomatoPHP\TomatoOrders\Models\Branch;
+use TomatoPHP\TomatoBranches\Models\Branch;
 use TomatoPHP\TomatoOrders\Models\Order;
 use TomatoPHP\TomatoProducts\Models\Product;
 
