@@ -100,12 +100,12 @@ class InventoryController extends Controller
                     foreach ($request->get('items') as $item){
                         $ckeckQTY = TomatoInventory::checkBranchInventory($item['item']['id'], $request->get('branch_id'), $item['qty'], $item['options']??[]);
                         if(!$ckeckQTY){
-                            $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] . ' '. __('Do Not have this QTY'));
+                            $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en']  . ' '. __('Do Not have this QTY'));
                         }
                         else {
                             $checkIfExists = TomatoInventory::checkInventoryItemQty($item['item']['id'], $request->get('branch_id'), $item['qty'], $item['options']??[]);
                             if(!$checkIfExists){
-                                $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] . ' '. __('Has Pending QTY on the Inventory Movement'));
+                                $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en']  . ' '. __('Has Pending QTY on the Inventory Movement'));
                             }
                         }
                     }
@@ -136,7 +136,7 @@ class InventoryController extends Controller
 
         foreach ($request->get('items') as $item){
             if(is_array($item['item'])){
-                $name = $item['item']['name'][app()->getLocale()];
+                $name = $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en'] ;
                 $type = isset($item['item']['barcode']) ? 'product' : 'material';
                 if($type === 'product'){
                     $item_type = Product::class;
@@ -234,12 +234,12 @@ class InventoryController extends Controller
                     foreach ($request->get('items') as $item){
                         $ckeckQTY = TomatoInventory::checkBranchInventory($item['item']['id'], $request->get('branch_id'), $item['qty'], $item['options']??[]);
                         if(!$ckeckQTY){
-                            $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] . ' '. __('Do Not have this QTY'));
+                            $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en']  . ' '. __('Do Not have this QTY'));
                         }
                         else {
                             $checkIfExists = TomatoInventory::checkInventoryItemQty($item['item']['id'], $request->get('branch_id'), $item['qty'], $item['options']??[], $model->id);
                             if(!$checkIfExists){
-                                $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] . ' '. __('Has Pending QTY on the Inventory Movement'));
+                                $fail(__('Sorry The Product') . ': ' . $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en']  . ' '. __('Has Pending QTY on the Inventory Movement'));
                             }
                         }
                     }
@@ -269,7 +269,7 @@ class InventoryController extends Controller
 
         foreach ($request->get('items') as $item){
             if(is_array($item['item'])){
-                $name = $item['item']['name'][app()->getLocale()];
+                $name = $item['item']['name'][app()->getLocale()] ?? $item['item']['name']['en'] ;
                 $type = isset($item['item']['barcode']) ? 'product' : 'material';
                 if($type === 'product'){
                     $item_type = Product::class;

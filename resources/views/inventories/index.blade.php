@@ -90,6 +90,7 @@
                             <option value="not-available">{{__('Not Available')}}</option>
                             <option value="part-available">{{__('Part Available')}}</option>
                             <option value="canceled">{{__('Canceled')}}</option>
+                            <option value="done">{{__('Done')}}</option>
                         </x-splade-select>
                     </x-splade-form>
                 </x-splade-cell>
