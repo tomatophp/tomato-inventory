@@ -6,15 +6,17 @@
         <x-tomato-admin-button class="w-full" :href="route('admin.inventories.create')" type="link">
             {{__('Add Items')}}
         </x-tomato-admin-button>
+        <x-tomato-admin-button warning :modal="true" :href="route('admin.inventories.import')" type="link">
+            <x-tomato-admin-tooltip :text="__('Import Inventory')">
+                <i class="bx bx-import"></i>
+            </x-tomato-admin-tooltip>
+        </x-tomato-admin-button>
     </x-slot:buttons>
 
     <div class="pb-12">
         <div class="mx-auto">
             <x-splade-table :for="$table" striped>
                 <x-slot:actions>
-                    <x-tomato-admin-table-action modal :href="route('admin.inventories.import')" secondary icon="bx bx-import">
-                        {{__('Import Product Inventory')}}
-                    </x-tomato-admin-table-action>
                     @if(request()->is_activated === 'true')
                         <x-tomato-admin-table-action href="{{route('admin.inventories.index')}}" secondary icon="bx bx-home">
                             {{__('Inventory Home')}}
