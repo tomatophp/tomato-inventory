@@ -2,7 +2,7 @@
     <x-splade-form class="flex flex-col space-y-4" action="{{route('admin.inventories.store')}}" method="post" :default="[
         'type' => 'in',
         'status' => 'pending',
-         'items' => [
+         'items' => count($items) ? $items : [
             [
                 'item' => '',
                 'price' => 0,

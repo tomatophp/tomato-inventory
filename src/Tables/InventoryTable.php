@@ -92,6 +92,7 @@ class InventoryTable extends AbstractTable
                     "out" => __("Out")
                 ]
             )
+            ->dateFilter()
             ->defaultSort('id', 'desc')
             ->column(
                 key: 'id',
@@ -113,6 +114,7 @@ class InventoryTable extends AbstractTable
             ->column(
                 key: 'uuid',
                 label: __('UUID'),
+                searchable: true,
                 hidden: true,
                 sortable: true
             )
@@ -124,6 +126,7 @@ class InventoryTable extends AbstractTable
             ->column(
                 key: 'order.uuid',
                 label: __('Order'),
+                searchable: true,
                 sortable: true
             )
             ->column(
@@ -139,6 +142,11 @@ class InventoryTable extends AbstractTable
             ->column(
                 key: 'total',
                 label: __('Total'),
+                sortable: true
+            )
+            ->column(
+                key: 'created_at',
+                label: __('Date'),
                 sortable: true
             )
 

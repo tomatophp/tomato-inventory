@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use ProtoneMedia\Splade\Facades\Toast;
 use TomatoPHP\TomatoAdmin\Facade\Tomato;
@@ -33,7 +34,7 @@ class InventoryController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         $query = Inventory::query();
-        $query->where('is_activated', $request->has('is_activated') ?: 0);
+        $query->where('is_activated', false);
 
         return Tomato::index(
             request: $request,
@@ -45,6 +46,28 @@ class InventoryController extends Controller
                 "order_id",
                 "branch_id",
                 "status"
+            ]
+        );
+    }
+
+    public function history(Request $request)
+    {
+        $query = Inventory::query();
+        $query->where('is_activated', true);
+
+        return Tomato::index(
+            request: $request,
+            model: $this->model,
+            view: 'tomato-inventory::inventories.index',
+            table: \TomatoPHP\TomatoInventory\Tables\InventoryTable::class,
+            query: $query,
+            filters: [
+                "order_id",
+                "branch_id",
+                "status"
+            ],
+            data: [
+                'history' => true
             ]
         );
     }
@@ -69,10 +92,32 @@ class InventoryController extends Controller
     /**
      * @return View
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $items = [];
+        if($request->has('ids') && $request->get('ids')){
+            foreach ($request->get('ids') as $id){
+                $product = Product::where('id', $id)->with('productMetas', function ($q){
+                    $q->where('key', 'options');
+                })->first();
+
+                $items[] = [
+                    'item' => $product,
+                    'price' => $product->price,
+                    'discount' => $product->discount,
+                    'qty' => 1,
+                    'tax' => $product->tax,
+                    'total' => ($product->price+$product->tax)-$product->discount,
+                    'options' => (object)[]
+                ];
+            }
+
+        }
         return Tomato::create(
             view: 'tomato-inventory::inventories.create',
+            data: [
+                'items' => $items
+            ]
         );
     }
 
@@ -153,6 +198,7 @@ class InventoryController extends Controller
             }
 
             $response->record->inventoryItems()->create([
+                'uuid' => $response->record->uuid . '-' . Str::random(6),
                 'item_id' => $item_id??null,
                 'item_type' => $item_type??null,
                 'item' => $name,
@@ -301,6 +347,7 @@ class InventoryController extends Controller
             }
             else {
                 $response->record->inventoryItems()->create([
+                    'uuid' => $response->record->uuid . '-' . Str::random(6),
                     'item_id' => $item_id??null,
                     'item_type' => $item_type??null,
                     'item' => $name,
@@ -352,5 +399,38 @@ class InventoryController extends Controller
     public function print(\TomatoPHP\TomatoInventory\Models\Inventory $model)
     {
         return view('tomato-inventory::inventories.show-print', compact('model'));
+    }
+
+    public function printProductReport(Request $request)
+    {
+        $request->validate([
+            "branch_id" => "nullable|exists:branches,id",
+            "product_id" => "nullable",
+            "options" => "nullable"
+        ]);
+
+        $report = InventoryReport::query();
+        $report->with('branch');
+
+        if($request->has('branch_id') && !empty($request->get('branch_id'))){
+            $report->where('branch_id', $request->get('branch_id'));
+        }
+        if($request->has('product_id') && $request->get('product_id') !=='undefined'){
+            $report->where('item_id', $request->get('product_id'))
+                ->where('item_type', Product::class);
+        }
+
+        $report = $report->get()->map(function ($item){
+            $item->product  = $item->item_type::find($item->item_id);
+            return $item;
+        }) ?? [];
+
+        return view('tomato-inventory::inventories.print-products-report', compact('report'));
+    }
+
+    public function barcode(Request $request, Inventory $model)
+    {
+        $items = $model->inventoryItems;
+        return view('tomato-inventory::inventories.print-barcode', compact('items'));
     }
 }

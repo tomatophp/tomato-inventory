@@ -8,7 +8,6 @@ use TomatoPHP\TomatoInventory\Http\Controllers\InventoryLogController;
 
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
-    Route::get('admin/inventories/print', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'printIndex'])->name('inventories.print');
     Route::post('admin/inventories/{model}/status', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'status'])->name('inventories.status');
     Route::get('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodes'])->name('inventories.barcodes');
     Route::post('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodesPrint'])->name('inventories.barcodes.print');
@@ -22,8 +21,16 @@ Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(f
 });
 
 
+Route::middleware(['web','auth', 'verified'])->name('admin.')->group(function () {
+    Route::get('admin/inventories/print', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'printIndex'])->name('inventories.print');
+    Route::get('admin/inventories/{model}/print', [InventoryController::class, 'print'])->name('inventories.print.show');
+    Route::get('admin/inventories/{model}/barcode', [InventoryController::class, 'barcode'])->name('inventories.print.barcode');
+    Route::get('admin/inventories/print-product-report', [InventoryController::class, 'printProductReport'])->name('inventories.print.products');
+});
+
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/inventories', [InventoryController::class, 'index'])->name('inventories.index');
+    Route::get('admin/inventories/history', [InventoryController::class, 'history'])->name('inventories.history');
     Route::get('admin/inventories/api', [InventoryController::class, 'api'])->name('inventories.api');
     Route::get('admin/inventories/create', [InventoryController::class, 'create'])->name('inventories.create');
     Route::post('admin/inventories', [InventoryController::class, 'store'])->name('inventories.store');
@@ -33,9 +40,7 @@ Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(f
     Route::delete('admin/inventories/{model}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
 });
 
-Route::middleware(['web','auth', 'verified'])->name('admin.')->group(function () {
-    Route::get('admin/inventories/{model}/print', [InventoryController::class, 'print'])->name('inventories.print.show');
-});
+
 
 Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
     Route::get('admin/refunds', [RefundController::class, 'index'])->name('refunds.index');

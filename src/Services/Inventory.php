@@ -209,6 +209,7 @@ class Inventory
                 }
 
                 $inventory->inventoryItems()->create([
+                    'uuid' => $inventory->uuid . '-' . Str::random(6) . '-' . $order->uuid,
                     'item_id' => $item->product_id,
                     'item_type' => Product::class,
                     'item' => $item->product?->name,

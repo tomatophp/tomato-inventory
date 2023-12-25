@@ -58,8 +58,13 @@ class TomatoInventoryServiceProvider extends ServiceProvider
         TomatoMenu::register([
             Menu::make()
                 ->group(__('Inventory'))
-                ->label(__('Inventory'))
+                ->label(__('Pending Inventory'))
                 ->route('admin.inventories.index')
+                ->icon('bx bx-pause-circle'),
+            Menu::make()
+                ->group(__('Inventory'))
+                ->label(__('Inventory'))
+                ->route('admin.inventories.history')
                 ->icon('bx bxs-building-house'),
             Menu::make()
                 ->group(__('Inventory'))

@@ -216,17 +216,27 @@ class InventoryActionsController extends Controller
 
     public function reportData(Request $request){
         $request->validate([
-            "branch_id" => "required|exists:branches,id",
-            "product_id" => "required|array",
+            "branch_id" => "nullable|exists:branches,id",
+            "product_id" => "nullable|array",
             "options" => "nullable|array"
         ]);
 
-        $report = InventoryReport::where('branch_id', $request->get('branch_id'))
-            ->where('item_id', $request->get('product_id'))
-            ->where('item_type', Product::class)->get()->map(function ($item){
-                $item->product  = $item->item_type::find($item->item_id);
-                return $item;
-            });
+        $report = InventoryReport::query();
+        $report->with('branch');
+
+        if($request->has('branch_id') && !empty($request->get('branch_id'))){
+            $report->where('branch_id', $request->get('branch_id'));
+        }
+        if($request->has('product_id') && isset($request->get('product_id')['id']) && $request->get('product_id') !=='undefined'){
+            $report->where('item_id', $request->get('product_id')['id'])
+                ->where('item_type', Product::class);
+        }
+
+        $report = $report->get()->map(function ($item){
+            $item->product  = $item->item_type::find($item->item_id);
+            return $item;
+        }) ?? [];
+
 
         if($report){
             return response()->json([
@@ -324,7 +334,12 @@ class InventoryActionsController extends Controller
 
     public function printIndex(Request $request){
         $query = Inventory::query();
-        $query->where('is_activated', $request->has('is_activated') ?: 0);
+        if($request->has('history') && $request->get('history')){
+            $query->where('is_activated', 1);
+        }
+        else {
+            $query->where('is_activated', 0);
+        }
         $inventory = $query->with('inventoryItems')->get();
         return view('tomato-inventory::inventories.print', [
             'inventory' => $inventory

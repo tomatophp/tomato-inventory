@@ -31,7 +31,7 @@ class InventoryItem extends Model
     /**
      * @var array
      */
-    protected $fillable = ['inventory_id', 'type', 'item_type', 'item_id', 'linked_type', 'linked_id', 'item', 'description', 'note', 'qty', 'price', 'discount', 'tax', 'total', 'options', 'is_activated', 'created_at', 'updated_at'];
+    protected $fillable = ['uuid','inventory_id', 'type', 'item_type', 'item_id', 'linked_type', 'linked_id', 'item', 'description', 'note', 'qty', 'price', 'discount', 'tax', 'total', 'options', 'is_activated', 'created_at', 'updated_at'];
 
     protected $casts = [
         "options" => "json",
