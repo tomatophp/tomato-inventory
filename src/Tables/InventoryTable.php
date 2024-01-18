@@ -100,7 +100,6 @@ class InventoryTable extends AbstractTable
                 hidden: true,
                 sortable: true
             )
-            ->column(key: 'actions',label: trans('tomato-admin::global.crud.actions'))
             ->column(
                 key: 'items',
                 label: __('Items'),
@@ -109,13 +108,6 @@ class InventoryTable extends AbstractTable
             ->column(
                 key: 'status',
                 label: __('Status'),
-                sortable: true
-            )
-            ->column(
-                key: 'uuid',
-                label: __('UUID'),
-                searchable: true,
-                hidden: true,
                 sortable: true
             )
             ->column(
@@ -145,10 +137,17 @@ class InventoryTable extends AbstractTable
                 sortable: true
             )
             ->column(
+                key: 'uuid',
+                label: __('UUID'),
+                searchable: true,
+                sortable: true
+            )
+            ->column(
                 key: 'created_at',
                 label: __('Date'),
                 sortable: true
             )
+            ->column(key: 'actions',label: trans('tomato-admin::global.crud.actions'))
 
             ->paginate(10);
 
