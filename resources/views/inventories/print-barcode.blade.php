@@ -11,7 +11,7 @@
 @foreach($items as $item)
     <div style="margin-left: 0 auto; margin-right: 0 auto; display: block; text-align: center">
         <div>
-            <img src="data:image/png;base64,{!! \Milon\Barcode\DNS1D::getBarcodePNG($item->uuid, 'C128', 0.9) !!}" />
+            <img src="data:image/png;base64,{!! \Milon\Barcode\Facades\DNS1DFacade::getBarcodePNG($item->uuid, 'C128', 0.9) !!}" />
         </div>
         <div style="margin-top: -20px;">
             @php

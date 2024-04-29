@@ -27,7 +27,7 @@
           </x-splade-select>
         <div>
             <x-tomato-items :options="['item'=>'', 'price'=>0, 'discount'=>0, 'tax'=>0, 'qty'=>1,'total'=>0, 'options' =>(object)[]]" name="items">
-                <div class="grid grid-cols-12 gap-4 border-b py-4 my-4">
+                <div class="grid grid-cols-12 gap-4 border-b dark:border-zinc-700 py-4 my-4">
                     <div class="col-span-5">
                         {{__('Item')}}
                     </div>
@@ -85,7 +85,7 @@
                     <p v-text="form.errors.items"> </p>
                 </div>
                 <div class="flex flex-col gap-4 mt-4">
-                    <div class="flex justify-between gap-4 py-4 border-b">
+                    <div class="flex justify-between gap-4 py-4 border-b dark:border-zinc-700">
                         <div>
                             {{__('Tax')}}
                         </div>
@@ -93,7 +93,7 @@
                             @{{ items.tax }}
                         </div>
                     </div>
-                    <div class="flex justify-between gap-4 py-4 border-b">
+                    <div class="flex justify-between gap-4 py-4 border-b dark:border-zinc-700">
                         <div>
                             {{__('Sub Total')}}
                         </div>
@@ -101,7 +101,7 @@
                             @{{ items.price }}
                         </div>
                     </div>
-                    <div class="flex justify-between gap-4 py-4 border-b">
+                    <div class="flex justify-between gap-4 py-4 border-b dark:border-zinc-700">
                         <div>
                             {{__('Discount')}}
                         </div>
@@ -109,7 +109,7 @@
                             @{{ items.discount }}
                         </div>
                     </div>
-                    <div class="flex justify-between gap-4 py-4 border-b">
+                    <div class="flex justify-between gap-4 py-4 border-b dark:border-zinc-700">
                         <div>
                             {{__('Total')}}
                         </div>

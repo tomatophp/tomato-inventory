@@ -61,6 +61,7 @@ class InventoryTable extends AbstractTable
                 columns: ['id',]
             )
             ->selectFilter(
+                label: __('Order'),
                 key:'order_id',
                 option_label: "uuid",
                 option_value: "id",
@@ -69,6 +70,7 @@ class InventoryTable extends AbstractTable
                 queryBy: 'uuid'
             )
             ->selectFilter(
+                label: __('Branch'),
                 key:'branch_id',
                 option_label: "name",
                 option_value: "id",
@@ -76,6 +78,7 @@ class InventoryTable extends AbstractTable
                 remote_url: route('admin.branches.api')
             )
             ->selectFilter(
+                label: __('Status'),
                 key:'status',
                 options: [
                     "pending" => __("Pending"),
@@ -86,13 +89,14 @@ class InventoryTable extends AbstractTable
                 ]
             )
             ->selectFilter(
+                label: __('Type'),
                 key:'type',
                 options: [
                     "in" => __("In"),
                     "out" => __("Out")
                 ]
             )
-            ->dateFilter()
+            ->dateFilter(label: __('Date Filter'),)
             ->defaultSort('id', 'desc')
             ->column(
                 key: 'id',
