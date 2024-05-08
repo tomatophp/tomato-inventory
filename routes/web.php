@@ -7,7 +7,7 @@ use TomatoPHP\TomatoInventory\Http\Controllers\RefundController;
 use TomatoPHP\TomatoInventory\Http\Controllers\InventoryLogController;
 
 
-Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
+Route::middleware(array_merge(['splade', 'auth'], config('tomato-admin.route_middlewares')))->name('admin.')->group(function () {
     Route::post('admin/inventories/{model}/status', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'status'])->name('inventories.status');
     Route::get('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodes'])->name('inventories.barcodes');
     Route::post('admin/inventories/barcodes', [\TomatoPHP\TomatoInventory\Http\Controllers\InventoryActionsController::class, 'barcodesPrint'])->name('inventories.barcodes.print');
@@ -28,7 +28,7 @@ Route::middleware(['web','auth', 'verified'])->name('admin.')->group(function ()
     Route::get('admin/inventories/print-product-report', [InventoryController::class, 'printProductReport'])->name('inventories.print.products');
 });
 
-Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
+Route::middleware(array_merge(['splade', 'auth'], config('tomato-admin.route_middlewares')))->name('admin.')->group(function () {
     Route::get('admin/inventories', [InventoryController::class, 'index'])->name('inventories.index');
     Route::get('admin/inventories/history', [InventoryController::class, 'history'])->name('inventories.history');
     Route::get('admin/inventories/api', [InventoryController::class, 'api'])->name('inventories.api');
@@ -42,7 +42,7 @@ Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(f
 
 
 
-Route::middleware(['web','auth', 'splade', 'verified'])->name('admin.')->group(function () {
+Route::middleware(array_merge(['splade', 'auth'], config('tomato-admin.route_middlewares')))->name('admin.')->group(function () {
     Route::get('admin/refunds', [RefundController::class, 'index'])->name('refunds.index');
     Route::get('admin/refunds/api', [RefundController::class, 'api'])->name('refunds.api');
     Route::post('admin/refunds/orders', [RefundController::class, 'orders'])->name('refunds.orders');
